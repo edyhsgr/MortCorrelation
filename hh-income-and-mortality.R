@@ -1,4 +1,4 @@
-#Editing code from Carl Schmertmann ("forked") to see lifespan variation as mortality measure, and intervening years
+#Editing code from Carl Schmertmann ("forked") to view (just as additional) lifespan variation as mortality measure, and intervening years
 #EddieH, November 2021
 setwd("")
 
