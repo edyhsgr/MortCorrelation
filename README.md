@@ -1,3 +1,3 @@
-# USA-mortality
+# MortCorrelation
 
-Initial experiments with the US Mortality Database
+Fork of Carl Schmertmann's code to add lifespan variation as mortality measure, and intervening years
