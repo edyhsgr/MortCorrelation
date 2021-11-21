@@ -1,6 +1,8 @@
 
   ##Editing code from Carl Schmertmann ("fork" of https://github.com/schmert/USA-mortality, keeping needed files/info) 
   ##   to view (just as additional) lifespan variation as mortality measure, and intervening years
+  ##Lifespan variation info (sd of d_x) from Monica Alexander see https://www.monicaalexander.com/posts/2018-21-12-lifespan/ (and code link below)
+  ##Thanks Carl and Monica!
   ##EddieH, November 2021
   setwd("")
 
