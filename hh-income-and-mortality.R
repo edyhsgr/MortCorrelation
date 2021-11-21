@@ -1,7 +1,7 @@
-#Editing code from Carl Schmertmann ("forked") to view (just as additional) lifespan variation as mortality measure, and intervening years
-#EddieH, November 2021
+##Editing code from Carl Schmertmann ("fork" of https://github.com/schmert/USA-mortality, keeping needed files/info) 
+##   to view (just as additional) lifespan variation as mortality measure, and intervening years
+##EddieH, November 2021
 setwd("")
-
 
 #...................................................................
 # Carl Schmertmann
@@ -21,8 +21,9 @@ rm(list=ls())
 # Table H-8. Median Household Income by State: 1984 to 2020	
 
   ##Eddie modified for added years
-  hh_income = read.csv(file='extract-from-census-table-H08.csv',
-                      skip=10, header=TRUE)
+  hh_income = read.csv(file='https://raw.githubusercontent.com/edyhsgr/MortCorrelation/master/extract-from-census-table-H08.csv',
+                       skip=10, header=TRUE)
+
   ##End
 
 # 'crosswalk' for state geographic coding
@@ -108,7 +109,7 @@ included_states = hh_income$abb
 if (need.to.build.df) {
   file_list = paste0('States/',included_states,'/',
                      included_states,'_bltper_1x1.csv')
-  unzip(zipfile='lifetables.zip', files=file_list, junkpaths=TRUE)  
+  unzip(zipfile='lifetables_Test.zip', files=file_list, junkpaths=TRUE)  
   state.df = data.frame()
   for (this.state in included_states) {
     this.file = paste0(this.state,'_bltper_1x1.csv')
@@ -122,63 +123,74 @@ if (need.to.build.df) {
   
 } # if need.to.build
 
-
   ##Eddie modified for added years
   e0_info = state.df %>% 
-             filter(Year %in% seq(1985,2019,1), Age==0) %>% 
+             filter(Year %in% seq(1984,2018,1), Age==0) %>% 
              select(abb=PopName, year=Year, e0=ex)
   ##End
 
-
   ##Eddie added code from https://github.com/MJAlexander/states-mortality/blob/master/lifespan_variation/lifespan.R to view lifespan variation
-  e0_ls <- state.df %>% 
-    group_by(PopName, Sex, Year) %>% 
+  e0_ls_info <- state.df %>% 
+            filter(Year %in% seq(1984,2018,1), Sex=='b') %>% 
+    group_by(PopName, Year) %>% 
     mutate(cdx = cumsum(dx), e0 = ex[Age==0], 
            age = ifelse(Age=="110+", "110", Age),
            age = as.numeric(age),
            diff_sq = ((age - e0)^2*dx)) %>% 
-    group_by(PopName, Sex, Year, e0) %>% 
+    group_by(PopName, Year, e0) %>% 
     summarise(sd = sqrt(sum((diff_sq)/sum(dx)))) %>% 
   select(abb=PopName, year=Year, sd=sd)
-  
-  dog = left_join(income_info, e0_ls) %>% 
-        filter(!(abb == 'DC'))
-  
-  bird = dog %>% 
-          group_by(year) %>% 
-          summarize(rho=-round(cor(income, sd),2))
   ##End
 
-
 # combine income and e0 data, drop DC, then plot ----
-
 df = left_join(income_info, e0_info) %>% 
       filter(!(abb == 'DC'))
+
+  ##Eddie added - repeat for lifespan variation
+  df_ls = left_join(income_info, e0_ls_info) %>% 
+      filter(!(abb == 'DC'))
+  ##End
  
 # calculate correlations by year
 rho = df %>% 
         group_by(year) %>% 
         summarize(rho=round(cor(income, e0),2))
+  
+  ##Eddie added - repeat for lifespan variation
+  rho_ls = df_ls %>% 
+        group_by(year) %>% 
+        summarize(rho=round(cor(income, sd),2))
+  ##End
 
-# scatterplots and correlations ----
-ggplot(df) +
-  aes(x=income, y=e0, color=factor(year),label=abb) +
-  geom_point(size=6,alpha=.20) +
-  geom_text(size=2.5, fontface='bold') +
-  geom_text(data=rho,x=40000,y=79, 
-            aes(label=paste('rho:',rho)), size=6, parse=TRUE) +
-  geom_smooth(method='lm',se=FALSE) +
-  facet_wrap(~year) +
-  guides(color='none') +
-  labs(x='State Median Household Income (in 2020 dollars)',
-       y='Life Expectancy at Birth (e0), Both Sexes',
-       caption=paste0('Calculations by @CSchmert\n',
-                      'HH income data: US Census Bureau\n',
-                      'Life Expectancy data: US Mortality Database')) +
-  theme_bw() +
-  theme(axis.text = element_text(face='bold', size=12),
-        axis.title = element_text(face='bold', size=14),
-        strip.text = element_text(face='bold', size=16))
+  ##Eddie added - plots
+  plot(rho,main="rho for state e0 by state median income, by year",ylim=c(-1,1),col=2)
+     #Sys.sleep(3)
+  points(rho_ls,main="rho for state e0 by state lifespan variation, by year",col=3)   
+  ##End
 
-ggsave(filename='hh-income-and-mortality.png', 
-       height=10, width=10, dpi=300)
+  ##Remaining code from https://github.com/schmert/USA-mortality/blob/master/hh-income-and-mortality.R commented out
+
+## scatterplots and correlations ----
+#ggplot(df) +
+#  aes(x=income, y=e0, color=factor(year),label=abb) +
+#  geom_point(size=6,alpha=.20) +
+#  geom_text(size=2.5, fontface='bold') +
+#  geom_text(data=rho,x=40000,y=79, 
+#            aes(label=paste('rho:',rho)), size=6, parse=TRUE) +
+#  geom_smooth(method='lm',se=FALSE) +
+#  facet_wrap(~year) +
+#  guides(color='none') +
+#  labs(x='State Median Household Income (in 2020 dollars)',
+#       y='Life Expectancy at Birth (e0), Both Sexes',
+#       caption=paste0('Calculations by @CSchmert\n',
+#                      'HH income data: US Census Bureau\n',
+#                      'Life Expectancy data: US Mortality Database')) +
+#  theme_bw() +
+#  theme(axis.text = element_text(face='bold', size=12),
+#        axis.title = element_text(face='bold', size=14),
+#        strip.text = element_text(face='bold', size=16))
+#
+#ggsave(filename='hh-income-and-mortality.png', 
+#       height=10, width=10, dpi=300)
+##
+  ##End
