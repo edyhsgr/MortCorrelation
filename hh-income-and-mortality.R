@@ -131,7 +131,7 @@ if (need.to.build.df) {
   ##End
 
   ##Eddie added code from https://github.com/MJAlexander/states-mortality/blob/master/lifespan_variation/lifespan.R to view lifespan variation
-  e0_ls_info <- state.df %>% 
+  sd_dx_info <- state.df %>% 
             filter(Year %in% seq(1984,2018,1), Sex=='b') %>% 
     group_by(PopName, Year) %>% 
     mutate(cdx = cumsum(dx), e0 = ex[Age==0], 
@@ -148,7 +148,7 @@ df = left_join(income_info, e0_info) %>%
       filter(!(abb == 'DC'))
 
   ##Eddie added - repeat for lifespan variation
-  df_ls = left_join(income_info, e0_ls_info) %>% 
+  df_sd_dx = left_join(income_info, sd_dx_info) %>% 
       filter(!(abb == 'DC'))
   ##End
  
@@ -158,7 +158,7 @@ rho = df %>%
         summarize(rho=round(cor(income, e0),2))
   
   ##Eddie added - repeat for lifespan variation
-  rho_ls = df_ls %>% 
+  rho_sd_dx = df_sd_dx %>% 
         group_by(year) %>% 
         summarize(rho=round(cor(income, sd),2))
   ##End
@@ -168,7 +168,7 @@ rho = df %>%
        panel.first=abline(h=seq(-1,1,.25),col="grey"),
        main="correlation of US state e0 by median income (red), and \ncorrelation of US state lifespan variation by median income (green), \nby year (1984 to 2014)",
 	ylim=c(-1,1),col=2,cex.main=.85,cex.axis=.85)
-  points(rho_ls,col=3)   
+  points(rho_sd_dx,col=3)   
   ##End
 
   ##Remaining code from https://github.com/schmert/USA-mortality/blob/master/hh-income-and-mortality.R commented out
@@ -196,3 +196,4 @@ rho = df %>%
 #       height=10, width=10, dpi=300)
 ##
   ##End
+
