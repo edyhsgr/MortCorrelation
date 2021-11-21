@@ -1,3 +1,8 @@
+#Editing code from Carl Schmertmann ("forked") to see lifespan variation as mortality measure, and intervening years
+#EddieH, November 2021
+setwd("")
+
+
 #...................................................................
 # Carl Schmertmann
 # 17 Nov 2021
@@ -15,8 +20,10 @@ rm(list=ls())
 # https://www2.census.gov/programs-surveys/cps/tables/time-series/historical-income-households/h08.xlsx
 # Table H-8. Median Household Income by State: 1984 to 2020	
 
-hh_income = read.csv(file='extract-from-census-table-H08.csv',
-                     skip=10, header=TRUE)
+  ##Eddie modified for added years
+  hh_income = read.csv(file='extract-from-census-table-H08.csv',
+                      skip=10, header=TRUE)
+  ##End
 
 # 'crosswalk' for state geographic coding
 geo_info = tribble(
@@ -115,9 +122,32 @@ if (need.to.build.df) {
   
 } # if need.to.build
 
-e0_info = state.df %>% 
-           filter(Year %in% seq(1985,2015,10), Age==0) %>% 
-           select(abb=PopName, year=Year, e0=ex)
+
+  ##Eddie modified for added years
+  e0_info = state.df %>% 
+             filter(Year %in% seq(1985,2019,1), Age==0) %>% 
+             select(abb=PopName, year=Year, e0=ex)
+  ##End
+
+
+  ##Eddie added code from https://github.com/MJAlexander/states-mortality/blob/master/lifespan_variation/lifespan.R to view lifespan variation
+  e0_ls <- state.df %>% 
+    group_by(PopName, Sex, Year) %>% 
+    mutate(cdx = cumsum(dx), e0 = ex[Age==0], 
+           age = ifelse(Age=="110+", "110", Age),
+           age = as.numeric(age),
+           diff_sq = ((age - e0)^2*dx)) %>% 
+    group_by(PopName, Sex, Year, e0) %>% 
+    summarise(sd = sqrt(sum((diff_sq)/sum(dx)))) %>% 
+  select(abb=PopName, year=Year, sd=sd)
+  
+  dog = left_join(income_info, e0_ls) %>% 
+        filter(!(abb == 'DC'))
+  
+  bird = dog %>% 
+          group_by(year) %>% 
+          summarize(rho=-round(cor(income, sd),2))
+  ##End
 
 
 # combine income and e0 data, drop DC, then plot ----
