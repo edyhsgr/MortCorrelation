@@ -1,7 +1,7 @@
-##Editing code from Carl Schmertmann ("fork" of https://github.com/schmert/USA-mortality, keeping needed files/info) 
-##   to view (just as additional) lifespan variation as mortality measure, and intervening years
-##EddieH, November 2021
-setwd("")
+  ##Editing code from Carl Schmertmann ("fork" of https://github.com/schmert/USA-mortality, keeping needed files/info) 
+  ##   to view (just as additional) lifespan variation as mortality measure, and intervening years
+  ##EddieH, November 2021
+  setwd("")
 
 #...................................................................
 # Carl Schmertmann
@@ -163,7 +163,9 @@ rho = df %>%
   ##End
 
   ##Eddie added - plots
-  plot(rho,main="rho for state e0 by median income (red) \nand state lifespan variation by median income (green), \nby year",ylim=c(-1,1),col=2)
+  plot(rho,
+       panel.first=abline(h=seq(-1,1,.25),col="grey"),
+       main="rho for state e0 by median income (red) \nand state lifespan variation by median income (green), \nby year",ylim=c(-1,1),col=2)
   points(rho_ls,col=3)   
   ##End
 
