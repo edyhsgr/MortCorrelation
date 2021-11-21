@@ -163,13 +163,11 @@ rho = df %>%
   ##End
 
   ##Eddie added - plots
-  plot(rho,main="rho for state e0 by state median income, by year",ylim=c(-1,1),col=2)
-     #Sys.sleep(3)
-  points(rho_ls,main="rho for state e0 by state lifespan variation, by year",col=3)   
+  plot(rho,main="rho for state e0 by median income (red) \nand state lifespan variation by median income (green), \nby year",ylim=c(-1,1),col=2)
+  points(rho_ls,col=3)   
   ##End
 
   ##Remaining code from https://github.com/schmert/USA-mortality/blob/master/hh-income-and-mortality.R commented out
-
 ## scatterplots and correlations ----
 #ggplot(df) +
 #  aes(x=income, y=e0, color=factor(year),label=abb) +
