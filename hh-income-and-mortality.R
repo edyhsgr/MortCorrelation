@@ -1,3 +1,4 @@
+
   ##Editing code from Carl Schmertmann ("fork" of https://github.com/schmert/USA-mortality, keeping needed files/info) 
   ##   to view (just as additional) lifespan variation as mortality measure, and intervening years
   ##EddieH, November 2021
@@ -109,7 +110,7 @@ included_states = hh_income$abb
 if (need.to.build.df) {
   file_list = paste0('States/',included_states,'/',
                      included_states,'_bltper_1x1.csv')
-  unzip(zipfile='lifetables_Test.zip', files=file_list, junkpaths=TRUE)  
+  unzip(zipfile='lifetables.zip', files=file_list, junkpaths=TRUE)  
   state.df = data.frame()
   for (this.state in included_states) {
     this.file = paste0(this.state,'_bltper_1x1.csv')
@@ -165,7 +166,8 @@ rho = df %>%
   ##Eddie added - plots
   plot(rho,
        panel.first=abline(h=seq(-1,1,.25),col="grey"),
-       main="rho for state e0 by median income (red) \nand state lifespan variation by median income (green), \nby year",ylim=c(-1,1),col=2)
+       main="correlation of US state e0 by median income (red), and \ncorrelation of US state lifespan variation by median income (green), \nby year (1984 to 2014)",
+	ylim=c(-1,1),col=2,cex.main=.85,cex.axis=.85)
   points(rho_ls,col=3)   
   ##End
 
